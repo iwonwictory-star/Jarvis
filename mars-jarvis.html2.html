@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mars Jarvis</title>
+<style>
+:root{--bg:#04070d;--c:#00e5ff;--v:#7a5cff;--t:#d8f6ff;--m:#6f8ea0;--g:rgba(255,255,255,.05);--b:rgba(0,229,255,.22);--r:#ff4d6d;--y:#ffc233;--ok:#3dffa8}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--t);min-height:100vh;display:flex;background:radial-gradient(1100px 700px at 85% -10%,#10224a,transparent),radial-gradient(900px 600px at -10% 110%,#2a0f4a,transparent),var(--bg)}
+body:before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,229,255,.03) 0 1px,transparent 1px 3px);pointer-events:none}
+nav{width:200px;padding:20px 12px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--b);background:rgba(8,16,30,.6);backdrop-filter:blur(14px);position:sticky;top:0;height:100vh}
+.brand{font-weight:700;letter-spacing:.18em;color:var(--c);padding:4px 10px 18px;text-shadow:0 0 12px var(--c)}
+nav button{all:unset;cursor:pointer;padding:10px 14px;border-radius:10px;color:var(--m);transition:.2s}
+nav button:hover{color:var(--t);background:var(--g)}
+nav button.on{color:var(--c);background:rgba(0,229,255,.1);box-shadow:inset 2px 0 var(--c)}
+main{flex:1;padding:22px;min-width:0;max-width:1100px;position:relative}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+h1{font-size:20px;font-weight:600;flex:1}
+h2{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--c)}
+.pill{padding:4px 12px;border-radius:99px;border:1px solid var(--b);color:var(--m);font-size:13px}
+.card{background:var(--g);border:1px solid var(--b);border-radius:16px;padding:16px;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.06);margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+section{display:none}section.on{display:block}
+input,textarea,select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--b);color:var(--t);border-radius:10px;padding:9px 12px;font:inherit}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--c);outline-offset:1px}
+.btn{cursor:pointer;border:1px solid var(--c);background:rgba(0,229,255,.1);color:var(--c);border-radius:10px;padding:8px 14px;font:inherit;transition:.2s}
+.btn:hover{background:rgba(0,229,255,.25);box-shadow:0 0 14px rgba(0,229,255,.4)}
+.btn.on{background:var(--c);color:#001018}.btn.d{border-color:var(--r);color:var(--r);background:none}
+.row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid rgba(0,229,255,.12)}
+.item .tx{flex:1;white-space:pre-wrap;word-break:break-word}.item small{color:var(--m)}
+.done .tx{text-decoration:line-through;color:var(--m)}
+.pr{border-radius:6px;padding:1px 8px;font-size:12px;cursor:pointer;border:1px solid}
+.high{color:var(--r)}.medium{color:var(--y)}.low{color:var(--ok)}
+.stat{font-size:34px;font-weight:300;color:var(--c)}
+.reactor{width:150px;height:150px;margin:6px auto 12px;border-radius:50%;position:relative}
+.reactor i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--c);border-top-color:transparent;animation:sp 6s linear infinite;box-shadow:0 0 18px rgba(0,229,255,.5)}
+.reactor i:nth-child(2){inset:16px;border-color:var(--v);border-bottom-color:transparent;animation-duration:4s;animation-direction:reverse}
+.reactor i:nth-child(3){inset:34px;animation-duration:2.5s}
+.reactor b{position:absolute;inset:56px;border-radius:50%;background:radial-gradient(#fff,var(--c));box-shadow:0 0 30px var(--c);animation:pu 2.4s ease-in-out infinite}
+@keyframes sp{to{transform:rotate(360deg)}}@keyframes pu{50%{opacity:.55;transform:scale(.88)}}
+#ind{width:16px;height:16px;border-radius:50%;background:#3a4a58}
+#ind.l{background:var(--ok);animation:pu 1.2s infinite;box-shadow:0 0 14px var(--ok)}
+#ind.s{background:var(--c);box-shadow:0 0 14px var(--c)}#ind.m{background:var(--r)}
+.log{max-height:300px;overflow:auto}.log p{padding:3px 0}.log .U{color:var(--c)}.log .J{color:var(--t)}
+pre{max-height:260px;overflow:auto;font-size:12px;color:var(--m);white-space:pre-wrap}
+label{display:block;color:var(--m);font-size:13px;margin:10px 0 4px}
+.hc{cursor:pointer;color:var(--m);padding:3px 0}.hc:hover{color:var(--c)}
+@media(max-width:760px){body{flex-direction:column}
+nav{position:fixed;bottom:0;left:0;right:0;top:auto;width:auto;height:auto;flex-direction:row;justify-content:space-around;padding:6px;z-index:9;border-right:0;border-top:1px solid var(--b)}
+.brand{display:none}nav button{padding:8px 10px;font-size:13px}main{padding:14px 14px 80px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<nav>
+<div class="brand">MARS JARVIS</div>
+<button data-s="home" class="on">Ana sayfa</button><button data-s="memory">Hafıza</button><button data-s="tasks">Görevler</button><button data-s="voice">Ses konsolu</button><button data-s="settings">Ayarlar</button>
+</nav>
+<main>
+<header><h1 id="title">Ana sayfa</h1><span id="ind" title="Ses durumu"></span><span class="pill" id="stat">Bağlı değil</span><button class="btn" id="signin">Google Drive'a bağlan</button></header>
+
+<section id="home" class="on">
+<div class="grid">
+<div class="card" style="text-align:center"><div class="reactor"><i></i><i></i><i></i><b></b></div><p id="greet">İyi günler. Hafızanı yüklemek için Google Drive'a bağlan.</p></div>
+<div class="card"><h2>Hafıza</h2><div class="stat" id="sn">0</div><small>not</small><div class="stat" id="st">0</div><small>açık görev</small></div>
+<div class="card"><h2>Son etkinlik</h2><div id="recent" class="log"></div></div>
+</div></section>
+
+<section id="memory">
+<div class="card"><h2>Notlar</h2>
+<textarea id="nt" rows="2" placeholder="Bir not yaz ya da söyle: Jarvis, not ekle blockchain fikri"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" id="nadd">Notu kaydet</button><input id="nq" placeholder="Notlarda ara" style="flex:1;min-width:140px"></div>
+<div id="nl"></div></div>
+<div class="card"><h2>Hafıza dosyası: jarvis-data.json</h2>
+<div class="row"><button class="btn" id="msave">Drive'a kaydet</button><button class="btn" id="mload">Drive'dan yükle</button><span class="pill" id="mc"></span></div>
+<pre id="raw"></pre></div></section>
+
+<section id="tasks"><div class="card"><h2>Görevler</h2>
+<div class="row"><input id="tt" placeholder="Görev ekle" style="flex:1;min-width:160px"><select id="tp" style="width:auto"><option value="medium">orta</option><option value="high">yüksek</option><option value="low">düşük</option></select><button class="btn" id="tadd">Görevi ekle</button></div>
+<div id="tl"></div></div></section>
+
+<section id="voice"><div class="grid">
+<div class="card"><h2>Kontroller</h2>
+<div class="row"><button class="btn" id="listen">Dinlemeyi başlat</button><button class="btn" id="ptt">Bas ve konuş</button><button class="btn" id="mute">Sustur</button></div>
+<p><small id="vs">"Jarvis" de, ardından komutu söyle. Chrome veya Edge gerekir.</small></p>
+<div class="row" style="margin-top:12px"><input id="cmd" placeholder="Ya da komut yaz" style="flex:1"><button class="btn" id="send">Çalıştır</button></div>
+<h2 style="margin-top:14px">Komut geçmişi</h2><div id="hist"></div></div>
+<div class="card"><h2>Konuşma</h2><div id="log" class="log"></div></div>
+</div>
+<div class="card"><small>Dene: not ekle blockchain fikri · notları göster · not ara blockchain · not sil blockchain · yüksek öncelikli görev ekle Sam'i ara · görev tamamla Sam · öncelik düşük Sam · görev sil Sam · görevleri göster · ayarlara git · sustur</small></div></section>
+
+<section id="settings"><div class="card"><h2>Ayarlar</h2>
+<label>Google OAuth istemci kimliği (Web uygulaması)</label><input id="cid" placeholder="xxxx.apps.googleusercontent.com">
+<label>Uyandırma kelimesi</label><input id="ww" value="jarvis">
+<div class="row" style="margin-top:12px"><button class="btn on" id="sp">Sesli yanıtlar: açık</button><button class="btn" id="ssave">Ayarları kaydet</button><button class="btn d" id="out">Bağlantıyı kes</button></div>
+<p><small>Kurulum: Google Cloud Console'da Drive API'yi etkinleştir, Web türünde bir OAuth istemci kimliği oluştur ve bu sayfanın adresini Authorized JavaScript origins altına ekle. İstemci kimliği yalnızca bu tarayıcıda durur, diğer her şey Drive'da saklanır.</small></p></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),FN='jarvis-data.json',SC='https://www.googleapis.com/auth/drive.file';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+let D={notes:[],tasks:[],research:[],settings:{wake:'jarvis',speak:true},conversations:[]},tok=null,fid=null,tc=null,muted=false,rec=null,listening=false,ptt=false,timer;
+const stat=t=>$('#stat').textContent=t;
+
+/* ---------- Google Drive memory ---------- */
+async function api(u,o={}){const r=await fetch(u,{...o,headers:{Authorization:'Bearer '+tok,...(o.headers||{})}});if(!r.ok)throw new Error(r.status===401?'Oturum doldu, yeniden bağlan':'Drive hatası '+r.status);return r}
+async function loadMemory(){
+ const q=encodeURIComponent(`name='${FN}' and trashed=false`);
+ const j=await(await api(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`)).json();
+ if(j.files.length){fid=j.files[0].id;const d=await(await api(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`)).json();D={...D,...d,settings:{...D.settings,...d.settings}}}
+ else await saveMemory();
+ render();stat('Hafıza yüklendi')}
+async function saveMemory(){
+ if(!tok)return stat("Kaydetmek için Drive'a bağlan");
+ const body=JSON.stringify(D,null,2);
+ if(fid)await api(`https://www.googleapis.com/upload/drive/v3/files/${fid}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json'},body});
+ else{const bd='mjb',meta=JSON.stringify({name:FN,mimeType:'application/json'});
+  const mp=`--${bd}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${bd}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${bd}--`;
+  const j=await(await api('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+bd},body:mp})).json();fid=j.id}
+ stat("Drive'a kaydedildi")}
+function persist(){render();if(!tok)return;clearTimeout(timer);timer=setTimeout(()=>saveMemory().catch(e=>stat(e.message)),700)}
+function addMemory(col,item){D[col].push({id:uid(),created:Date.now(),...item});persist()}
+function editMemory(col,id,patch){const x=D[col].find(i=>i.id===id);if(x){Object.assign(x,patch);persist()}}
+function deleteMemory(col,id){D[col]=D[col].filter(i=>i.id!==id);persist()}
+
+/* ---------- Auth ---------- */
+function initAuth(){
+ const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=()=>stat('Bağlanmaya hazır');document.head.appendChild(s)}
+function signIn(){
+ const id=$('#cid').value.trim();
+ if(!id){go('settings');return stat('Önce Google istemci kimliğini ekle')}
+ if(!window.google){return stat('Google girişi yükleniyor')}
+ localStorage.setItem('mj_cid',id);
+ tc=google.accounts.oauth2.initTokenClient({client_id:id,scope:SC,callback:r=>{
+  if(r.error)return stat('Giriş başarısız: '+r.error);
+  tok=r.access_token;$('#signin').textContent='Drive bağlı';stat('Hafıza yükleniyor…');loadMemory().catch(e=>stat(e.message))}});
+ tc.requestAccessToken()}
+function signOut(){if(tok&&window.google)google.accounts.oauth2.revoke(tok);tok=null;fid=null;$('#signin').textContent="Google Drive'a bağlan";stat('Bağlantı kesildi')}
+
+/* ---------- Voice ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function ind(){const e=$('#ind');e.className=muted?'m':speechSynthesis.speaking?'s':listening?'l':''}
+function speak(t){
+ log('J',t);if(muted||!D.settings.speak||!window.speechSynthesis)return;
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';u.onstart=u.onend=ind;speechSynthesis.speak(u)}
+function log(who,text){D.conversations.push({id:uid(),who,text,ts:Date.now()});if(D.conversations.length>150)D.conversations.shift();persist()}
+function initRec(){
+ if(!SR){$('#vs').textContent='Bu tarayıcı konuşma tanımayı desteklemiyor. Yazılı komutlar çalışır.';return}
+ rec=new SR();rec.continuous=true;rec.lang='tr-TR';
+ rec.onresult=e=>{const t=e.results[e.results.length-1][0].transcript.trim();if(muted||speechSynthesis.speaking)return;hear(t)};
+ rec.onend=()=>{if(listening&&!muted)try{rec.start()}catch(e){}ind()};
+ rec.onerror=e=>{if(e.error==='not-allowed'){listening=false;$('#vs').textContent='Mikrofon engelli. İzin verip tekrar dene.';setListen()}}}
+function hear(t){
+ const w=(D.settings.wake||'jarvis').toLowerCase(),m=t.match(new RegExp('('+w+'|[cç]arv[ıi]s|jarv[ıi]s)','i'));
+ if(!ptt&&!m)return;
+ const c=(ptt?t:t.slice(m.index+m[0].length)).replace(/^[\s,.:]+/,'');ptt=false;$('#ptt').classList.remove('on');
+ c?run(c):speak('Efendim?')}
+function setListen(){
+ const b=$('#listen');b.textContent=listening?'Dinlemeyi durdur':'Dinlemeyi başlat';b.classList.toggle('on',listening);
+ if(!rec)return;if(listening&&!muted)try{rec.start()}catch(e){}else try{rec.stop()}catch(e){};ind()}
+
+/* ---------- Commands ---------- */
+const find=(col,q)=>{q=q.toLocaleLowerCase('tr').replace(/[.!?]$/,'');const a=D[col];return /^(son|last)$/.test(q)?a[a.length-1]:a.find(x=>x.text.toLocaleLowerCase('tr').includes(q))};
+const P='(y[üu]ksek|orta|d[üu][şs][üu]k|high|medium|low)',X=s=>new RegExp(s,'i'),pw=s=>/^(y|h)/i.test(s)?'high':/^(d|l)/i.test(s)?'low':'medium';
+const nav=x=>/^(ana|home)/i.test(x)?'home':/^(haf|mem)/i.test(x)?'memory':/^(g[öo]r|task)/i.test(x)?'tasks':/^(ses|voice)/i.test(x)?'voice':/^(ay|sett)/i.test(x)?'settings':null;
+function run(c){
+ c=c.trim();log('U',c);let m,k;
+ if((m=c.match(/^(?:go to|open)\s+(.+)$/i)||c.match(/^((?:ana\s)?\S+)\s+(?:git|a[çc])$/i))&&(k=nav(m[1])))return(go(k),speak('Açıyorum.'));
+ if(/^(?:notlar[ıi]?\s*(?:g[öo]ster|listele|a[çc])|(?:show|list) notes?)/i.test(c)){go('memory');const n=D.notes.slice(-3).reverse().map(x=>x.text).join('. ');return speak(D.notes.length?`${D.notes.length} notun var. Son notlar: ${n}`:'Henüz notun yok.')}
+ if(m=c.match(/^(?:not(?:lar(?:da)?)?\s+ara|(?:search|find)\s+notes?(?:\s+for)?)\s+(.+)/i)){go('memory');$('#nq').value=m[1];renderNotes();const n=D.notes.filter(x=>x.text.toLocaleLowerCase('tr').includes(m[1].toLocaleLowerCase('tr'))).length;return speak(`${n} not buldum.`)}
+ if(m=c.match(/^(?:not\s+(?:sil|kald[ıi]r)\s+(.+)|(.+?)\s+notunu\s+(?:sil|kald[ıi]r)|(?:delete|remove)\s+note\s+(.+))$/i)){const x=find('notes',m[1]||m[2]||m[3]);if(!x)return speak('Bu notu bulamadım.');deleteMemory('notes',x.id);return speak('Notu sildim.')}
+ if(m=c.match(/^(?:not\s*(?:ekle|kaydet|al|olu[şs]tur|:)|(?:(?:save|add|create|take)\s+)?note\s*(?::|that)?)\s*(.+)/i)){addMemory('notes',{text:m[1]});return speak('Notunu kaydettim.')}
+ if(/^(?:g[öo]revleri?\s*(?:g[öo]ster|listele|a[çc])|(?:show|list) tasks?)/i.test(c)){go('tasks');const o=D.tasks.filter(t=>!t.done);return speak(o.length?`${o.length} açık görevin var. ${o.slice(0,3).map(t=>t.text).join('. ')}`:'Açık görevin yok.')}
+ if(m=c.match(X(String.raw`^(?:(?<a>${P})\s+[öo]ncelikli\s+)?(?:g[öo]rev\s+(?:ekle|olu[şs]tur)|(?:add|create)\s+(?:(?<b>${P})\s+priority\s+)?task)\s+(?<t>.+?)(?:\s+(?:[öo]ncelik|priority)\s+(?<c>${P}))?$`))){const g=m.groups,p=pw(g.a||g.b||g.c||'orta');addMemory('tasks',{text:g.t,priority:p,done:false});return speak(`Görev eklendi, öncelik ${PN[p]}.`)}
+ if(m=c.match(/^(?:g[öo]rev(?:i)?\s+(tamamla|bitir|sil|kald[ıi]r)\s+(.+)|(.+?)\s+g[öo]revini\s+(tamamla|bitir|sil|kald[ıi]r)|(complete|finish|delete|remove)\s+task\s+(.+))$/i)){
+  const v=(m[1]||m[4]||m[5]).toLowerCase(),x=find('tasks',m[2]||m[3]||m[6]);
+  if(!x)return speak('Bu görevi bulamadım.');
+  if(/^(sil|kald|delete|remove)/.test(v)){deleteMemory('tasks',x.id);return speak('Görevi sildim.')}
+  editMemory('tasks',x.id,{done:true});return speak('Görevi tamamladım.')}
+ if(m=c.match(X(String.raw`^(?:set\s+)?(?:[öo]ncelik|priority)\s+${P}\s+(?:for\s+|on\s+)?(?:g[öo]rev\s+|task\s+)?(.+)`))){const x=find('tasks',m[2]);if(!x)return speak('Bu görevi bulamadım.');const p=pw(m[1]);editMemory('tasks',x.id,{priority:p});return speak(`Öncelik ${PN[p]} olarak güncellendi.`)}
+ if(/^(?:haf[ıi]zay[ıi]\s+kaydet|save memory)/i.test(c))return saveMemory().then(()=>speak('Hafıza kaydedildi.')).catch(e=>speak(e.message));
+ if(/^(?:haf[ıi]zay[ıi]\s+y[üu]kle|load memory)/i.test(c))return tok?loadMemory().then(()=>speak('Hafıza yüklendi.')):speak("Önce Google Drive'a bağlan.");
+ if(/^(?:sustur|sessiz|mute)/i.test(c))return toggleMute(true);
+ speak('Üzgünüm, bu komutu anlayamadım.')}
+
+/* ---------- UI ---------- */
+function go(s){document.querySelectorAll('section').forEach(e=>e.classList.toggle('on',e.id===s));document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.s===s;b.classList.toggle('on',on);if(on)$('#title').textContent=b.textContent})}
+function toggleMute(v){muted=v??!muted;$('#mute').textContent=muted?'Sesi aç':'Sustur';$('#mute').classList.toggle('on',muted);if(muted)speechSynthesis.cancel();setListen()}
+const PN={high:'yüksek',medium:'orta',low:'düşük'};const when=t=>new Date(t).toLocaleString('tr-TR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+function renderNotes(){
+ const q=$('#nq').value.toLowerCase(),a=D.notes.filter(n=>n.text.toLowerCase().includes(q)).reverse();
+ $('#nl').innerHTML=a.length?a.map(n=>`<div class="item"><div class="tx">${esc(n.text)}<br><small>${when(n.created)}</small></div><button class="btn" data-e="${n.id}">Düzenle</button><button class="btn d" data-d="${n.id}">Sil</button></div>`).join(''):'<p><small>Not bulunamadı. Yukarıdan bir not yaz.</small></p>'}
+function renderTasks(){
+ const o={high:0,medium:1,low:2},a=[...D.tasks].sort((x,y)=>x.done-y.done||o[x.priority]-o[y.priority]);
+ $('#tl').innerHTML=a.length?a.map(t=>`<div class="item ${t.done?'done':''}"><input type="checkbox" style="width:auto;margin-top:5px" ${t.done?'checked':''} data-c="${t.id}"><div class="tx">${esc(t.text)}</div><span class="pr ${t.priority}" data-p="${t.id}" title="Önceliği değiştir">${PN[t.priority]}</span><button class="btn d" data-x="${t.id}">Sil</button></div>`).join(''):'<p><small>Henüz görev yok. Yukarıdan bir görev ekle.</small></p>'}
+function render(){
+ renderNotes();renderTasks();
+ $('#sn').textContent=D.notes.length;$('#st').textContent=D.tasks.filter(t=>!t.done).length;
+ const cv=D.conversations;
+ $('#log').innerHTML=cv.slice(-40).map(c=>`<p class="${c.who}"><small>${c.who==='U'?'Sen':'Jarvis'}</small> ${esc(c.text)}</p>`).join('');$('#log').scrollTop=1e9;
+ $('#recent').innerHTML=cv.slice(-5).reverse().map(c=>`<p class="${c.who}">${esc(c.text)}</p>`).join('')||'<small>Henüz bir şey yok.</small>';
+ $('#hist').innerHTML=cv.filter(c=>c.who==='U').slice(-8).reverse().map(c=>`<div class="hc" data-r="${esc(c.text)}">${esc(c.text)}</div>`).join('')||'<small>Henüz komut yok.</small>';
+ $('#raw').textContent=JSON.stringify(D,null,2);
+ $('#mc').textContent=`${D.notes.length} not · ${D.tasks.length} görev`;
+ $('#sp').textContent='Sesli yanıtlar: '+(D.settings.speak?'açık':'kapalı');$('#sp').classList.toggle('on',D.settings.speak)}
+
+document.addEventListener('click',e=>{
+ const t=e.target,d=t.dataset;
+ if(d.s)go(d.s);
+ if(d.e){const n=D.notes.find(x=>x.id===d.e),v=prompt('Notu düzenle',n.text);if(v&&v.trim())editMemory('notes',n.id,{text:v.trim()})}
+ if(d.d)deleteMemory('notes',d.d);
+ if(d.c)editMemory('tasks',d.c,{done:t.checked});
+ if(d.x)deleteMemory('tasks',d.x);
+ if(d.p){const t2=D.tasks.find(x=>x.id===d.p),n=['high','medium','low'];editMemory('tasks',t2.id,{priority:n[(n.indexOf(t2.priority)+1)%3]})}
+ if(d.r)run(d.r)});
+$('#signin').onclick=signIn;$('#out').onclick=signOut;
+$('#nadd').onclick=()=>{const v=$('#nt').value.trim();if(v){addMemory('notes',{text:v});$('#nt').value=''}};
+$('#nq').oninput=renderNotes;
+$('#tadd').onclick=()=>{const v=$('#tt').value.trim();if(v){addMemory('tasks',{text:v,priority:$('#tp').value,done:false});$('#tt').value=''}};
+$('#tt').onkeydown=e=>{if(e.key==='Enter')$('#tadd').click()};
+$('#msave').onclick=()=>saveMemory().catch(e=>stat(e.message));
+$('#mload').onclick=()=>tok?loadMemory().catch(e=>stat(e.message)):stat("Önce Drive'a bağlan");
+$('#listen').onclick=()=>{listening=!listening;setListen()};
+$('#ptt').onclick=()=>{ptt=true;$('#ptt').classList.add('on');if(!listening){listening=true;setListen()}$('#vs').textContent='Tek bir komut için dinliyorum…'};
+$('#mute').onclick=()=>toggleMute();
+$('#send').onclick=()=>{const v=$('#cmd').value.trim();if(v){$('#cmd').value='';run(v.replace(new RegExp('^'+(D.settings.wake||'jarvis')+'[\\s,]*','i'),''))}};
+$('#cmd').onkeydown=e=>{if(e.key==='Enter')$('#send').click()};
+$('#sp').onclick=()=>{D.settings.speak=!D.settings.speak;persist()};
+$('#ssave').onclick=()=>{D.settings.wake=($('#ww').value.trim()||'jarvis').toLowerCase();localStorage.setItem('mj_cid',$('#cid').value.trim());persist();stat('Ayarlar kaydedildi')};
+
+$('#cid').value=localStorage.getItem('mj_cid')||'';
+initAuth();initRec();render();
+</script></body></html>
