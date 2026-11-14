@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mars Jarvis</title>
+<style>
+:root{--bg:#04070d;--c:#00e5ff;--v:#7a5cff;--t:#d8f6ff;--m:#6f8ea0;--g:rgba(255,255,255,.05);--b:rgba(0,229,255,.22);--r:#ff4d6d;--y:#ffc233;--ok:#3dffa8}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--t);min-height:100vh;display:flex;background:radial-gradient(1100px 700px at 85% -10%,#10224a,transparent),radial-gradient(900px 600px at -10% 110%,#2a0f4a,transparent),var(--bg)}
+body:before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,229,255,.03) 0 1px,transparent 1px 3px);pointer-events:none}
+nav{width:200px;padding:20px 12px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--b);background:rgba(8,16,30,.6);backdrop-filter:blur(14px);position:sticky;top:0;height:100vh}
+.brand{font-weight:700;letter-spacing:.18em;color:var(--c);padding:4px 10px 18px;text-shadow:0 0 12px var(--c)}
+nav button{all:unset;cursor:pointer;padding:10px 14px;border-radius:10px;color:var(--m);transition:.2s}
+nav button:hover{color:var(--t);background:var(--g)}
+nav button.on{color:var(--c);background:rgba(0,229,255,.1);box-shadow:inset 2px 0 var(--c)}
+main{flex:1;padding:22px;min-width:0;max-width:1100px;position:relative}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+h1{font-size:20px;font-weight:600;flex:1}
+h2{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--c)}
+.pill{padding:4px 12px;border-radius:99px;border:1px solid var(--b);color:var(--m);font-size:13px}
+.card{background:var(--g);border:1px solid var(--b);border-radius:16px;padding:16px;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.06);margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+section{display:none}section.on{display:block}
+input,textarea,select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--b);color:var(--t);border-radius:10px;padding:9px 12px;font:inherit}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--c);outline-offset:1px}
+.btn{cursor:pointer;border:1px solid var(--c);background:rgba(0,229,255,.1);color:var(--c);border-radius:10px;padding:8px 14px;font:inherit;transition:.2s}
+.btn:hover{background:rgba(0,229,255,.25);box-shadow:0 0 14px rgba(0,229,255,.4)}
+.btn.on{background:var(--c);color:#001018}.btn.d{border-color:var(--r);color:var(--r);background:none}
+.row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid rgba(0,229,255,.12)}
+.item .tx{flex:1;white-space:pre-wrap;word-break:break-word}.item small{color:var(--m)}
+.done .tx{text-decoration:line-through;color:var(--m)}
+.pr{border-radius:6px;padding:1px 8px;font-size:12px;cursor:pointer;border:1px solid}
+.high{color:var(--r)}.medium{color:var(--y)}.low{color:var(--ok)}
+.stat{font-size:34px;font-weight:300;color:var(--c)}
+.reactor{width:150px;height:150px;margin:6px auto 12px;border-radius:50%;position:relative}
+.reactor i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--c);border-top-color:transparent;animation:sp 6s linear infinite;box-shadow:0 0 18px rgba(0,229,255,.5)}
+.reactor i:nth-child(2){inset:16px;border-color:var(--v);border-bottom-color:transparent;animation-duration:4s;animation-direction:reverse}
+.reactor i:nth-child(3){inset:34px;animation-duration:2.5s}
+.reactor b{position:absolute;inset:56px;border-radius:50%;background:radial-gradient(#fff,var(--c));box-shadow:0 0 30px var(--c);animation:pu 2.4s ease-in-out infinite}
+@keyframes sp{to{transform:rotate(360deg)}}@keyframes pu{50%{opacity:.55;transform:scale(.88)}}
+#ind{width:16px;height:16px;border-radius:50%;background:#3a4a58}
+#ind.l{background:var(--ok);animation:pu 1.2s infinite;box-shadow:0 0 14px var(--ok)}
+#ind.s{background:var(--c);box-shadow:0 0 14px var(--c)}#ind.m{background:var(--r)}
+.log{max-height:300px;overflow:auto}.log p{padding:3px 0}.log .U{color:var(--c)}.log .J{color:var(--t)}
+pre{max-height:260px;overflow:auto;font-size:12px;color:var(--m);white-space:pre-wrap}
+label{display:block;color:var(--m);font-size:13px;margin:10px 0 4px}
+.hc{cursor:pointer;color:var(--m);padding:3px 0}.hc:hover{color:var(--c)}
+@media(max-width:760px){body{flex-direction:column}
+nav{position:fixed;bottom:0;left:0;right:0;top:auto;width:auto;height:auto;flex-direction:row;justify-content:space-around;padding:6px;z-index:9;border-right:0;border-top:1px solid var(--b)}
+.brand{display:none}nav button{padding:8px 10px;font-size:13px}main{padding:14px 14px 80px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<nav>
+<div class="brand">MARS JARVIS</div>
+<button data-s="home" class="on">Home</button><button data-s="memory">Memory</button><button data-s="tasks">Tasks</button><button data-s="voice">Voice console</button><button data-s="settings">Settings</button>
+</nav>
+<main>
+<header><h1 id="title">Home</h1><span id="ind" title="Voice status"></span><span class="pill" id="stat">Not connected</span><button class="btn" id="signin">Connect Google Drive</button></header>
+
+<section id="home" class="on">
+<div class="grid">
+<div class="card" style="text-align:center"><div class="reactor"><i></i><i></i><i></i><b></b></div><p id="greet">Good day. Connect Google Drive to load your memory.</p></div>
+<div class="card"><h2>Memory</h2><div class="stat" id="sn">0</div><small>notes</small><div class="stat" id="st">0</div><small>open tasks</small></div>
+<div class="card"><h2>Recent activity</h2><div id="recent" class="log"></div></div>
+</div></section>
+
+<section id="memory">
+<div class="card"><h2>Notes</h2>
+<textarea id="nt" rows="2" placeholder="Write a note, or say: Jarvis, add note blockchain idea"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" id="nadd">Save note</button><input id="nq" placeholder="Search notes" style="flex:1;min-width:140px"></div>
+<div id="nl"></div></div>
+<div class="card"><h2>Memory file: jarvis-data.json</h2>
+<div class="row"><button class="btn" id="msave">Save to Drive</button><button class="btn" id="mload">Load from Drive</button><span class="pill" id="mc"></span></div>
+<pre id="raw"></pre></div></section>
+
+<section id="tasks"><div class="card"><h2>Tasks</h2>
+<div class="row"><input id="tt" placeholder="Add a task" style="flex:1;min-width:160px"><select id="tp" style="width:auto"><option>medium</option><option>high</option><option>low</option></select><button class="btn" id="tadd">Add task</button></div>
+<div id="tl"></div></div></section>
+
+<section id="voice"><div class="grid">
+<div class="card"><h2>Controls</h2>
+<div class="row"><button class="btn" id="listen">Start listening</button><button class="btn" id="ptt">Push to talk</button><button class="btn" id="mute">Mute</button></div>
+<p><small id="vs">Say "Jarvis" then a command. Needs Chrome or Edge.</small></p>
+<div class="row" style="margin-top:12px"><input id="cmd" placeholder="Or type a command" style="flex:1"><button class="btn" id="send">Run</button></div>
+<h2 style="margin-top:14px">Command history</h2><div id="hist"></div></div>
+<div class="card"><h2>Conversation</h2><div id="log" class="log"></div></div>
+</div>
+<div class="card"><small>Try: add note blockchain idea · show notes · search notes blockchain · delete note blockchain · add high priority task call Sam · complete task call Sam · priority low call Sam · delete task call Sam · show tasks · go to settings</small></div></section>
+
+<section id="settings"><div class="card"><h2>Settings</h2>
+<label>Google OAuth client ID (Web application)</label><input id="cid" placeholder="xxxx.apps.googleusercontent.com">
+<label>Wake word</label><input id="ww" value="jarvis">
+<div class="row" style="margin-top:12px"><button class="btn on" id="sp">Spoken responses: on</button><button class="btn" id="ssave">Save settings</button><button class="btn d" id="out">Disconnect</button></div>
+<p><small>Setup: Google Cloud Console, enable Drive API, create an OAuth client ID (Web), add this page's origin under Authorized JavaScript origins. The client ID stays in this browser; everything else lives in Drive. Serve the file over https or localhost.</small></p></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),FN='jarvis-data.json',SC='https://www.googleapis.com/auth/drive.file';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+let D={notes:[],tasks:[],research:[],settings:{wake:'jarvis',speak:true},conversations:[]},tok=null,fid=null,tc=null,muted=false,rec=null,listening=false,ptt=false,timer;
+const stat=t=>$('#stat').textContent=t;
+
+/* ---------- Google Drive memory ---------- */
+async function api(u,o={}){const r=await fetch(u,{...o,headers:{Authorization:'Bearer '+tok,...(o.headers||{})}});if(!r.ok)throw new Error(r.status===401?'Session expired, reconnect':'Drive error '+r.status);return r}
+async function loadMemory(){
+ const q=encodeURIComponent(`name='${FN}' and trashed=false`);
+ const j=await(await api(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`)).json();
+ if(j.files.length){fid=j.files[0].id;const d=await(await api(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`)).json();D={...D,...d,settings:{...D.settings,...d.settings}}}
+ else await saveMemory();
+ render();stat('Memory loaded')}
+async function saveMemory(){
+ if(!tok)return stat('Connect Drive to save');
+ const body=JSON.stringify(D,null,2);
+ if(fid)await api(`https://www.googleapis.com/upload/drive/v3/files/${fid}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json'},body});
+ else{const bd='mjb',meta=JSON.stringify({name:FN,mimeType:'application/json'});
+  const mp=`--${bd}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${bd}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${bd}--`;
+  const j=await(await api('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+bd},body:mp})).json();fid=j.id}
+ stat('Saved to Drive')}
+function persist(){render();if(!tok)return;clearTimeout(timer);timer=setTimeout(()=>saveMemory().catch(e=>stat(e.message)),700)}
+function addMemory(col,item){D[col].push({id:uid(),created:Date.now(),...item});persist()}
+function editMemory(col,id,patch){const x=D[col].find(i=>i.id===id);if(x){Object.assign(x,patch);persist()}}
+function deleteMemory(col,id){D[col]=D[col].filter(i=>i.id!==id);persist()}
+
+/* ---------- Auth ---------- */
+function initAuth(){
+ const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=()=>stat('Ready to connect');document.head.appendChild(s)}
+function signIn(){
+ const id=$('#cid').value.trim();
+ if(!id){go('settings');return stat('Add your Google client ID first')}
+ if(!window.google){return stat('Google sign-in is still loading')}
+ localStorage.setItem('mj_cid',id);
+ tc=google.accounts.oauth2.initTokenClient({client_id:id,scope:SC,callback:r=>{
+  if(r.error)return stat('Sign-in failed: '+r.error);
+  tok=r.access_token;$('#signin').textContent='Drive connected';stat('Loading memory…');loadMemory().catch(e=>stat(e.message))}});
+ tc.requestAccessToken()}
+function signOut(){if(tok&&window.google)google.accounts.oauth2.revoke(tok);tok=null;fid=null;$('#signin').textContent='Connect Google Drive';stat('Disconnected')}
+
+/* ---------- Voice ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function ind(){const e=$('#ind');e.className=muted?'m':speechSynthesis.speaking?'s':listening?'l':''}
+function speak(t){
+ log('J',t);if(muted||!D.settings.speak||!window.speechSynthesis)return;
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.onstart=u.onend=ind;speechSynthesis.speak(u)}
+function log(who,text){D.conversations.push({id:uid(),who,text,ts:Date.now()});if(D.conversations.length>150)D.conversations.shift();persist()}
+function initRec(){
+ if(!SR){$('#vs').textContent='Speech recognition is not supported in this browser. Typed commands still work.';return}
+ rec=new SR();rec.continuous=true;rec.lang='en-US';
+ rec.onresult=e=>{const t=e.results[e.results.length-1][0].transcript.trim();if(muted||speechSynthesis.speaking)return;hear(t)};
+ rec.onend=()=>{if(listening&&!muted)try{rec.start()}catch(e){}ind()};
+ rec.onerror=e=>{if(e.error==='not-allowed'){listening=false;$('#vs').textContent='Microphone blocked. Allow access and try again.';setListen()}}}
+function hear(t){
+ const w=(D.settings.wake||'jarvis').toLowerCase(),i=t.toLowerCase().indexOf(w);
+ if(!ptt&&i<0)return;
+ const c=(ptt?t:t.slice(i+w.length)).replace(/^[\s,.:]+/,'');ptt=false;$('#ptt').classList.remove('on');
+ c?run(c):speak('Yes?')}
+function setListen(){
+ const b=$('#listen');b.textContent=listening?'Stop listening':'Start listening';b.classList.toggle('on',listening);
+ if(!rec)return;if(listening&&!muted)try{rec.start()}catch(e){}else try{rec.stop()}catch(e){};ind()}
+
+/* ---------- Commands ---------- */
+const find=(col,q)=>{q=q.toLowerCase().replace(/[.!?]$/,'');const a=D[col];return q==='last'?a[a.length-1]:a.find(x=>(x.text).toLowerCase().includes(q))};
+function run(c){
+ c=c.trim();log('U',c);let m;
+ if(m=c.match(/^(?:go to|open)\s+(home|memory|tasks|voice|settings)/i))return(go(m[1].toLowerCase()),speak('Opening '+m[1]));
+ if(/^(?:show|list)\s+notes?/i.test(c)){go('memory');const n=D.notes.slice(-3).reverse().map(x=>x.text).join('. ');return speak(D.notes.length?`You have ${D.notes.length} notes. Latest: ${n}`:'You have no notes yet.')}
+ if(m=c.match(/^(?:search|find)\s+notes?\s+(?:for\s+)?(.+)/i)){go('memory');$('#nq').value=m[1];renderNotes();const k=D.notes.filter(x=>x.text.toLowerCase().includes(m[1].toLowerCase())).length;return speak(`I found ${k} matching ${k===1?'note':'notes'}.`)}
+ if(m=c.match(/^(?:delete|remove)\s+note\s+(.+)/i)){const x=find('notes',m[1]);if(!x)return speak('I could not find that note.');deleteMemory('notes',x.id);return speak('Note deleted.')}
+ if(m=c.match(/^(?:(?:save|add|create|take)\s+)?(?:a\s+)?note\s*(?:that|:)?\s*(.+)/i)){addMemory('notes',{text:m[1]});return speak('I have saved your note.')}
+ if(/^(?:show|list)\s+tasks?/i.test(c)){go('tasks');const o=D.tasks.filter(t=>!t.done);return speak(o.length?`You have ${o.length} open tasks. ${o.slice(0,3).map(t=>t.text).join('. ')}`:'You have no open tasks.')}
+ if(m=c.match(/^(?:add|create)\s+(?:(high|medium|low)\s+priority\s+)?task\s+(.+?)(?:\s+(?:with\s+)?priority\s+(high|medium|low))?$/i)){const p=(m[1]||m[3]||'medium').toLowerCase();addMemory('tasks',{text:m[2],priority:p,done:false});return speak(`Task added with ${p} priority.`)}
+ if(m=c.match(/^(?:complete|finish|done)\s+task\s+(.+)/i)){const x=find('tasks',m[1]);if(!x)return speak('I could not find that task.');editMemory('tasks',x.id,{done:true});return speak('Task completed.')}
+ if(m=c.match(/^(?:delete|remove)\s+task\s+(.+)/i)){const x=find('tasks',m[1]);if(!x)return speak('I could not find that task.');deleteMemory('tasks',x.id);return speak('Task deleted.')}
+ if(m=c.match(/^(?:set\s+)?priority\s+(high|medium|low)\s+(?:for\s+|on\s+)?(?:task\s+)?(.+)/i)){const x=find('tasks',m[2]);if(!x)return speak('I could not find that task.');editMemory('tasks',x.id,{priority:m[1].toLowerCase()});return speak(`Priority set to ${m[1]}.`)}
+ if(/^save memory/i.test(c))return saveMemory().then(()=>speak('Memory saved.')).catch(e=>speak(e.message));
+ if(/^load memory/i.test(c))return tok?loadMemory().then(()=>speak('Memory loaded.')):speak('Connect Google Drive first.');
+ if(/^mute/i.test(c))return toggleMute(true);
+ speak("Sorry, I didn't understand that command.")}
+
+/* ---------- UI ---------- */
+function go(s){document.querySelectorAll('section').forEach(e=>e.classList.toggle('on',e.id===s));document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.s===s;b.classList.toggle('on',on);if(on)$('#title').textContent=b.textContent})}
+function toggleMute(v){muted=v??!muted;$('#mute').textContent=muted?'Unmute':'Mute';$('#mute').classList.toggle('on',muted);if(muted)speechSynthesis.cancel();setListen()}
+const when=t=>new Date(t).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+function renderNotes(){
+ const q=$('#nq').value.toLowerCase(),a=D.notes.filter(n=>n.text.toLowerCase().includes(q)).reverse();
+ $('#nl').innerHTML=a.length?a.map(n=>`<div class="item"><div class="tx">${esc(n.text)}<br><small>${when(n.created)}</small></div><button class="btn" data-e="${n.id}">Edit</button><button class="btn d" data-d="${n.id}">Delete</button></div>`).join(''):'<p><small>No notes found. Write one above.</small></p>'}
+function renderTasks(){
+ const o={high:0,medium:1,low:2},a=[...D.tasks].sort((x,y)=>x.done-y.done||o[x.priority]-o[y.priority]);
+ $('#tl').innerHTML=a.length?a.map(t=>`<div class="item ${t.done?'done':''}"><input type="checkbox" style="width:auto;margin-top:5px" ${t.done?'checked':''} data-c="${t.id}"><div class="tx">${esc(t.text)}</div><span class="pr ${t.priority}" data-p="${t.id}" title="Change priority">${t.priority}</span><button class="btn d" data-x="${t.id}">Delete</button></div>`).join(''):'<p><small>No tasks yet. Add one above.</small></p>'}
+function render(){
+ renderNotes();renderTasks();
+ $('#sn').textContent=D.notes.length;$('#st').textContent=D.tasks.filter(t=>!t.done).length;
+ const cv=D.conversations;
+ $('#log').innerHTML=cv.slice(-40).map(c=>`<p class="${c.who}"><small>${c.who==='U'?'You':'Jarvis'}</small> ${esc(c.text)}</p>`).join('');$('#log').scrollTop=1e9;
+ $('#recent').innerHTML=cv.slice(-5).reverse().map(c=>`<p class="${c.who}">${esc(c.text)}</p>`).join('')||'<small>Nothing yet.</small>';
+ $('#hist').innerHTML=cv.filter(c=>c.who==='U').slice(-8).reverse().map(c=>`<div class="hc" data-r="${esc(c.text)}">${esc(c.text)}</div>`).join('')||'<small>No commands yet.</small>';
+ $('#raw').textContent=JSON.stringify(D,null,2);
+ $('#mc').textContent=`${D.notes.length} notes · ${D.tasks.length} tasks`;
+ $('#sp').textContent='Spoken responses: '+(D.settings.speak?'on':'off');$('#sp').classList.toggle('on',D.settings.speak)}
+
+document.addEventListener('click',e=>{
+ const t=e.target,d=t.dataset;
+ if(d.s)go(d.s);
+ if(d.e){const n=D.notes.find(x=>x.id===d.e),v=prompt('Edit note',n.text);if(v&&v.trim())editMemory('notes',n.id,{text:v.trim()})}
+ if(d.d)deleteMemory('notes',d.d);
+ if(d.c)editMemory('tasks',d.c,{done:t.checked});
+ if(d.x)deleteMemory('tasks',d.x);
+ if(d.p){const t2=D.tasks.find(x=>x.id===d.p),n=['high','medium','low'];editMemory('tasks',t2.id,{priority:n[(n.indexOf(t2.priority)+1)%3]})}
+ if(d.r)run(d.r)});
+$('#signin').onclick=signIn;$('#out').onclick=signOut;
+$('#nadd').onclick=()=>{const v=$('#nt').value.trim();if(v){addMemory('notes',{text:v});$('#nt').value=''}};
+$('#nq').oninput=renderNotes;
+$('#tadd').onclick=()=>{const v=$('#tt').value.trim();if(v){addMemory('tasks',{text:v,priority:$('#tp').value,done:false});$('#tt').value=''}};
+$('#tt').onkeydown=e=>{if(e.key==='Enter')$('#tadd').click()};
+$('#msave').onclick=()=>saveMemory().catch(e=>stat(e.message));
+$('#mload').onclick=()=>tok?loadMemory().catch(e=>stat(e.message)):stat('Connect Drive first');
+$('#listen').onclick=()=>{listening=!listening;setListen()};
+$('#ptt').onclick=()=>{ptt=true;$('#ptt').classList.add('on');if(!listening){listening=true;setListen()}$('#vs').textContent='Listening for one command…'};
+$('#mute').onclick=()=>toggleMute();
+$('#send').onclick=()=>{const v=$('#cmd').value.trim();if(v){$('#cmd').value='';run(v.replace(new RegExp('^'+(D.settings.wake||'jarvis')+'[\\s,]*','i'),''))}};
+$('#cmd').onkeydown=e=>{if(e.key==='Enter')$('#send').click()};
+$('#sp').onclick=()=>{D.settings.speak=!D.settings.speak;persist()};
+$('#ssave').onclick=()=>{D.settings.wake=($('#ww').value.trim()||'jarvis').toLowerCase();localStorage.setItem('mj_cid',$('#cid').value.trim());persist();stat('Settings saved')};
+
+$('#cid').value=localStorage.getItem('mj_cid')||'';
+initAuth();initRec();render();
+</script></body></html>
